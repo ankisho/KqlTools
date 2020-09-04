@@ -123,7 +123,7 @@ namespace RealTimeKql
             command.Description = "Realtime processing of Syslog Events";
             command.ExtendedHelpText = Environment.NewLine + "Use this option to listen to Syslog Events." + Environment.NewLine
                 + Environment.NewLine + "Real-time SysLog Events"
-                + Environment.NewLine + "\tRealtimeKql syslog --query=QueryFile.csl --adxcluster=CDOC.kusto.windows.net --adxdatabase=GeorgiTest --adxtable=EvtxOutput --adxquickingest --adxreset" + Environment.NewLine;
+                + Environment.NewLine + "\tRealtimeKql syslog --query=QueryFile.csl --adxcluster=CDOC.kusto.windows.net --adxdatabase=GeorgiTest --adxtable=EvtxOutput --adxdirect --adxreset" + Environment.NewLine;
 
             command.HelpOption("-?|-h|--help");
 
@@ -180,7 +180,7 @@ namespace RealTimeKql
                 "The existing data in the destination table is dropped before new data is logged.",
                 CommandOptionType.NoValue);
 
-            var quickIngestOption = command.Option("-ad|--adxdirect",
+            var directIngestOption = command.Option("-ad|--adxdirect",
                 "Default upload to ADX is using queued ingest. Use this option to do a direct ingest to ADX.",
                 CommandOptionType.NoValue);
 
@@ -256,7 +256,7 @@ namespace RealTimeKql
                         outputFileOption.Value(),
                         kscbAdmin,
                         kscbIngest,
-                        quickIngestOption.HasValue(),
+                        directIngestOption.HasValue(),
                         tableOption.Value(),
                         resetTableOption.HasValue());
                 }
@@ -278,7 +278,7 @@ namespace RealTimeKql
             string outputFileName,
             KustoConnectionStringBuilder kscbAdmin,
             KustoConnectionStringBuilder kscbIngest,
-            bool quickIngest,
+            bool directIngest,
             string tableName,
             bool resetTable)
         {
@@ -315,7 +315,7 @@ namespace RealTimeKql
             Console.WriteLine();
             Console.WriteLine("Listening to Syslog events. Press any key to terminate");
 
-            var ku = CreateUploader(UploadTimespan, outputFileName, kscbAdmin, kscbIngest, quickIngest, tableName, resetTable);
+            var ku = CreateUploader(UploadTimespan, outputFileName, kscbAdmin, kscbIngest, directIngest, tableName, resetTable);
             Task task = Task.Factory.StartNew(() =>
             {
                 RunUploader(ku, _converter, queryFile);
